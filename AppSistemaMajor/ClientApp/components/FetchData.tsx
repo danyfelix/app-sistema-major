@@ -9,12 +9,23 @@ interface FetchDataExampleDuplas {
     inputValue: string;
     numero: string;
     palabra: string;
+    totalBuenas: number;
+    totalMalas: number;
 }
 
 export class FetchData extends React.Component<RouteComponentProps<{}>, FetchDataExampleDuplas> {
     constructor() {
         super();
-        this.state = { duplas: [], loading: true, isVisible: true, inputValue: "", numero: "", palabra: "" };
+        this.state = {
+            duplas: [],
+            loading: true,
+            isVisible: true,
+            inputValue: "",
+            numero: "",
+            palabra: "",
+            totalBuenas: 0,
+            totalMalas: 0
+        };
         this.handleClick = this.handleClick.bind(this);
         this.updateInput = this.updateInput.bind(this);
         this.evaluarRespuesta = this.evaluarRespuesta.bind(this);
@@ -37,10 +48,14 @@ export class FetchData extends React.Component<RouteComponentProps<{}>, FetchDat
     }
 
     evaluarRespuesta() {
-        if (this.state.palabra.toLowerCase() == this.state.inputValue.toLowerCase())
-            alert('Correcto!\r\n\r\nLa palabra para ' + this.state.numero + ' es: "' + this.state.palabra + '" y escribiste: "' + this.state.inputValue + '".');
-        else
-            alert('Incorrecto!\r\n\r\nLa palabra para ' + this.state.numero + ' era: "' + this.state.palabra + '" y escribiste: "' + this.state.inputValue + '".');
+        if (this.state.palabra.toLowerCase() == this.state.inputValue.toLowerCase()) {
+            alert('Correcto!!!\r\n\r\nLa palabra para ' + this.state.numero + ' es: "' + this.state.palabra + '" y escribiste: "' + this.state.inputValue + '".');
+            this.setState({ totalBuenas: this.state.totalBuenas + 1 });
+        }
+        else {
+            alert('Incorrecto!!!\r\n\r\nLa palabra para ' + this.state.numero + ' era: "' + this.state.palabra + '" y escribiste: "' + this.state.inputValue + '".');
+            this.setState({ totalMalas: this.state.totalMalas + 1 });
+        }
         this.loadNumberAndWord();
     }
     
@@ -69,9 +84,9 @@ export class FetchData extends React.Component<RouteComponentProps<{}>, FetchDat
             ? <p><em>Loading...</em></p>
             : FetchData.renderDuplasTable(this.state.duplas);
         let buttonText = this.state.isVisible ? "Practicar" : "Mostrar Tabla";
-        
+        let totalRespuestas = this.state.totalMalas + this.state.totalBuenas;
         let seccionDePreguntas = <div>
-            <h1>Pregunta:</h1>
+            <h1>Pregunta</h1>
             <h1>Cual es la palabra que corresponde a la siguiente dupla?</h1>
             <h2>El numero es: {this.state.numero}</h2>
             <br />
@@ -80,6 +95,10 @@ export class FetchData extends React.Component<RouteComponentProps<{}>, FetchDat
             <button onClick={this.evaluarRespuesta}>Verificar Respuesta</button>
             &nbsp;&nbsp;
             <button onClick={this.loadNumberAndWord}>Otro Numero?</button>
+            <br /><br />
+            <p>Totales: {totalRespuestas}</p>
+            <p>Aciertos: {this.state.totalBuenas} &nbsp;&nbsp; {totalRespuestas > 0 ? (this.state.totalBuenas / totalRespuestas * 100) : 0}%</p>
+            <p>Errores: {this.state.totalMalas} &nbsp;&nbsp; {totalRespuestas > 0 ? (this.state.totalMalas / totalRespuestas * 100) : 0}%</p>
         </div>;
 
         return <div>
